@@ -1,5 +1,4 @@
-// ChakraUIをインポート
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Box,
   Input,
@@ -7,7 +6,10 @@ import {
   Container,
   VStack,
   Heading,
-  Text
+  Text,
+  Textarea,
+  Flex,
+  Spacer
 } from '@chakra-ui/react';
 
 // InputButtonFormコンポーネント
@@ -16,11 +18,9 @@ const InputButtonForm = () => {
   const [inputValue, setInputValue] = useState('');
   // 送信した値を保存するstate
   const [submittedValue, setSubmittedValue] = useState('');
-  // アラートメッセージのstate
-  const [alertInfo, setAlertInfo] = useState({ show: false, status: '', message: '' });
 
   // 入力値が変更されたときのハンドラー
-  const handleInputChange = (e:any) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setInputValue(e.target.value);
   };
 
@@ -28,63 +28,81 @@ const InputButtonForm = () => {
   const handleSubmit = () => {
     if (inputValue.trim() === '') {
       // 空の場合はアラートでエラーメッセージを表示
-      setAlertInfo({
-        show: true,
-        status: 'error',
-        message: 'テキストを入力してください'
-      });
       return;
     }
 
     // 送信された値を保存
     setSubmittedValue(inputValue);
     
-    // 成功メッセージを表示
-    setAlertInfo({
-      show: true,
-      status: 'success',
-      message: `「${inputValue}」が送信されました`
-    });
-    
     // 入力フィールドをクリア
     setInputValue('');
 
-    // 3秒後にアラートを非表示にする
-    setTimeout(() => {
-      setAlertInfo({ show: false, status: '', message: '' });
-    }, 3000);
   };
 
+  // キーボードショートカット（Ctrl+Enter で送信）
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+        handleSubmit();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [inputValue]);
+
   return (
-    <Container centerContent maxW="container.md" py={8}>
-      <VStack width="100%">
-        <Heading as="h1" size="xl">ChakraUI フォーム</Heading>
-        
-        {/* {alertInfo.show && (
-          <Alert status={alertInfo.status} borderRadius="md">
-            {alertInfo.message}
-          </Alert>
-        )} */}
-        
-        <Box width="100%" p={5} shadow="md" borderWidth="1px" borderRadius="md">
-          <VStack>
-            <Input
-              placeholder="テキストを入力してください"
+    <Container centerContent maxW="container.lg" py={8} height="100vh">
+      <VStack width="100%" height="100%">
+        <Heading as="h1" size="xl">読みたい文章をコピペしよう</Heading>
+                
+        <Box 
+          width="100%" 
+          p={6} 
+          shadow="lg" 
+          borderWidth="1px" 
+          borderRadius="lg"
+          flex="1"
+          display="flex"
+          flexDirection="column"
+          height="50vh" // 画面の50%の高さ
+        >
+          <VStack height="100%">
+            <Textarea
+              placeholder="テキストを入力してください（Ctrl+Enter で送信）"
               value={inputValue}
               onChange={handleInputChange}
               size="md"
-              // Enterキーで送信できるようにする
-              onKeyPress={(e) => {
-                if (e.key === 'Enter') {
-                  handleSubmit();
-                }
+              resize="none"
+              flex="1"
+              height="calc(100% - 50px)" // ボタンの高さを考慮
+              fontSize="md"
+              borderColor="gray.300"
+              _focus={{
+                borderColor: "blue.500",
+                boxShadow: "0 0 0 1px blue.500"
               }}
             />
             
-            <Button 
-              colorScheme="blue" 
+            <Flex width="100%">
+              <Text fontSize="xs" color="gray.500">
+                Ctrl+Enter で送信できます
+              </Text>
+              <Spacer />
+              <Text fontSize="xs" color="gray.500">
+                {inputValue.length} 文字
+              </Text>
+            </Flex>
+            
+            <Button
+              colorScheme="blue"
               onClick={handleSubmit}
               width="100%"
+              height="50px"
+              _hover={{ bg: "blue.600" }}
+              _active={{ bg: "blue.700" }}
             >
               送信
             </Button>
@@ -92,8 +110,18 @@ const InputButtonForm = () => {
         </Box>
         
         {submittedValue && (
-          <Box width="100%" p={5} shadow="md" borderWidth="1px" borderRadius="md">
-            <Text>最後に送信された値: <strong>{submittedValue}</strong></Text>
+          <Box 
+            width="100%" 
+            p={5} 
+            shadow="md" 
+            borderWidth="1px" 
+            borderRadius="md"
+            bg="gray.50"
+            maxHeight="30vh"
+            overflow="auto"
+          >
+            <Text fontWeight="bold" mb={2}>最後に送信された内容:</Text>
+            <Text whiteSpace="pre-wrap">{submittedValue}</Text>
           </Box>
         )}
       </VStack>
