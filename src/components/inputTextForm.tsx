@@ -11,6 +11,7 @@ import {
   Flex,
   Spacer
 } from '@chakra-ui/react';
+import { useNavigate } from 'react-router-dom';
 
 // InputButtonFormコンポーネント
 const InputButtonForm = () => {
@@ -18,6 +19,7 @@ const InputButtonForm = () => {
   const [inputValue, setInputValue] = useState('');
   // 送信した値を保存するstate
   const [submittedValue, setSubmittedValue] = useState('');
+  const navigate = useNavigate();
 
   // 入力値が変更されたときのハンドラー
   const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -27,16 +29,14 @@ const InputButtonForm = () => {
   // ボタンがクリックされたときのハンドラー
   const handleSubmit = () => {
     if (inputValue.trim() === '') {
-      // 空の場合はアラートでエラーメッセージを表示
       return;
     }
 
     // 送信された値を保存
     setSubmittedValue(inputValue);
-    
+    navigate('/ReadBook', { state: { readText: inputValue } });
     // 入力フィールドをクリア
     setInputValue('');
-
   };
 
   // キーボードショートカット（Ctrl+Enter で送信）
@@ -104,7 +104,7 @@ const InputButtonForm = () => {
               _hover={{ bg: "blue.600" }}
               _active={{ bg: "blue.700" }}
             >
-              送信
+                送信 
             </Button>
           </VStack>
         </Box>

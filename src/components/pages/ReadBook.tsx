@@ -1,15 +1,24 @@
 import React from 'react'
-import { Box, Text, Button } from '@chakra-ui/react'
+import { Container, Text, Button } from '@chakra-ui/react'
+import { useLocation } from 'react-router-dom';
+
+interface LocationState {
+    readText: string;
+  }
 
 const ReadBook = () => {
+    const location = useLocation();
+    const state = location.state as LocationState;
+    const readText = state.readText;
+  
   return (
-    <div>
+    <Container centerContent maxW="container.lg" py={8} height="100vh">
       <div>ReadBook</div>
-      <Text>本を読む</Text>
+      <Text>{readText}</Text>
       <Button>
-        <a href="https://www.aozora.gr.jp/">青空文庫</a>
+        <a href="">Start</a>
       </Button>
-    </div>
+    </Container>
   )
 }
 
