@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Container, Text, Button, Box, Flex, Heading, Input } from '@chakra-ui/react';
 import { Link, useLocation } from 'react-router-dom';
 
